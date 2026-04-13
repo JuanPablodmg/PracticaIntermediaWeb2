@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import { config } from './config/index.js';
 import app from './app.js';
+
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const start = async () => {
   try {

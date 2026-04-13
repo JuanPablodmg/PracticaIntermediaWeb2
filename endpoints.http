@@ -1,0 +1,184 @@
+### Variables
+@base = http://localhost:3000/api
+@accessToken = REEMPLAZA_CON_TU_ACCESS_TOKEN
+@refreshToken = REEMPLAZA_CON_TU_REFRESH_TOKEN
+
+### ────────────────────────────────────────────────────────
+### 1) Registro de usuario
+### POST /api/user/register
+### ────────────────────────────────────────────────────────
+POST {{base}}/user/register
+Content-Type: application/json
+
+{
+  "email": "test@ejemplo.com",
+  "password": "password123"
+}
+
+### ────────────────────────────────────────────────────────
+### 2) Validación del email
+### PUT /api/user/validation
+### (el código de 6 dígitos aparece en la consola del servidor)
+### ────────────────────────────────────────────────────────
+PUT {{base}}/user/validation
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "code": "123456"
+}
+
+### ────────────────────────────────────────────────────────
+### 3) Login
+### POST /api/user/login
+### ────────────────────────────────────────────────────────
+POST {{base}}/user/login
+Content-Type: application/json
+
+{
+  "email": "test@ejemplo.com",
+  "password": "password123"
+}
+
+### ────────────────────────────────────────────────────────
+### 4a) Onboarding — Datos personales
+### PUT /api/user/register
+### ────────────────────────────────────────────────────────
+PUT {{base}}/user/register
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Ana",
+  "lastName": "García López",
+  "nif": "12345678Z"
+}
+
+### ────────────────────────────────────────────────────────
+### 4b) Onboarding — Crear nueva compañía
+### PATCH /api/user/company
+### ────────────────────────────────────────────────────────
+PATCH {{base}}/user/company
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isFreelance": false,
+  "name": "Acme S.L.",
+  "cif": "B12345678",
+  "address": {
+    "street": "Calle Mayor",
+    "number": "10",
+    "postal": "28001",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### ────────────────────────────────────────────────────────
+### 4b) Onboarding — Unirse a compañía existente (mismo CIF)
+### PATCH /api/user/company
+### ────────────────────────────────────────────────────────
+PATCH {{base}}/user/company
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isFreelance": false,
+  "name": "Acme S.L.",
+  "cif": "B12345678"
+}
+
+### ────────────────────────────────────────────────────────
+### 4b) Onboarding — Autónomo
+### PATCH /api/user/company
+### ────────────────────────────────────────────────────────
+PATCH {{base}}/user/company
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "isFreelance": true
+}
+
+### ────────────────────────────────────────────────────────
+### 5) Logo de la compañía
+### PATCH /api/user/logo  (multipart/form-data)
+### ────────────────────────────────────────────────────────
+PATCH {{base}}/user/logo
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="logo"; filename="logo.png"
+Content-Type: image/png
+
+< ./logo.png
+------FormBoundary--
+
+### ────────────────────────────────────────────────────────
+### 6) Obtener usuario (con populate Company)
+### GET /api/user
+### ────────────────────────────────────────────────────────
+GET {{base}}/user
+Authorization: Bearer {{accessToken}}
+
+### ────────────────────────────────────────────────────────
+### 7a) Refresh token
+### POST /api/user/refresh
+### ────────────────────────────────────────────────────────
+POST {{base}}/user/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### ────────────────────────────────────────────────────────
+### 7b) Logout
+### POST /api/user/logout
+### ────────────────────────────────────────────────────────
+POST {{base}}/user/logout
+Authorization: Bearer {{accessToken}}
+
+### ────────────────────────────────────────────────────────
+### 8) Eliminar usuario — Soft delete
+### DELETE /api/user?soft=true
+### ────────────────────────────────────────────────────────
+DELETE {{base}}/user?soft=true
+Authorization: Bearer {{accessToken}}
+
+### ────────────────────────────────────────────────────────
+### 8) Eliminar usuario — Hard delete
+### DELETE /api/user
+### ────────────────────────────────────────────────────────
+DELETE {{base}}/user
+Authorization: Bearer {{accessToken}}
+
+### ────────────────────────────────────────────────────────
+### 9) Cambiar contraseña (BONUS)
+### PUT /api/user/password
+### ────────────────────────────────────────────────────────
+PUT {{base}}/user/password
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "currentPassword": "password123",
+  "newPassword": "nuevaPassword456"
+}
+
+### ────────────────────────────────────────────────────────
+### 10) Invitar compañero (solo admin)
+### POST /api/user/invite
+### ────────────────────────────────────────────────────────
+POST {{base}}/user/invite
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "email": "compañero@ejemplo.com",
+  "password": "password123",
+  "name": "Carlos",
+  "lastName": "Martínez"
+}

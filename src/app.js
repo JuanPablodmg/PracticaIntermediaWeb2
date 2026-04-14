@@ -28,7 +28,16 @@ app.use(
 // ── Parsers ──────────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize());
+app.use((req, res, next) => {
+  try {
+    ['body', 'params', 'headers'].forEach((key) => {
+      if (req[key]) req[key] = mongoSanitize.sanitize(req[key]);
+    });
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ── Archivos estáticos (logos) ────────────────────────────────────────────────
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));

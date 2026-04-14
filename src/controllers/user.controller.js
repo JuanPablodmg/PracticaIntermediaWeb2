@@ -34,19 +34,17 @@ export const register = async (req, res, next) => {
     const hashed = await bcrypt.hash(password, 12);
     const verificationCode = generateVerificationCode();
 
-    const { accessToken, refreshToken } = signTokens(
-      (await User.create({
-        email,
-        password: hashed,
-        verificationCode,
-        verificationAttempts: 3,
-        refreshToken,
-      }))._id
-    );
+    const created = await User.create({
+      email,
+      password: hashed,
+      verificationCode,
+      verificationAttempts: 3,
+    });
 
-    // Necesitamos guardar refreshToken en el usuario
-    const user = await User.findOneAndUpdate(
-      { email },
+    const { accessToken, refreshToken } = signTokens(created._id);
+
+    const user = await User.findByIdAndUpdate(
+      created._id,
       { refreshToken },
       { new: true }
     );
@@ -72,7 +70,7 @@ export const register = async (req, res, next) => {
 export const validateEmail = async (req, res, next) => {
   try {
     const { code } = req.body;
-    const user = req.user;
+    const user = await User.findById(req.user._id);
 
     if (user.status === 'verified') {
       return res.json({ ok: true, message: 'El email ya estaba verificado' });
